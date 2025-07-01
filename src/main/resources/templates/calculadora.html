@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculadora</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; }
+        .calc-container { background: #fff; padding: 2em; border-radius: 10px; width: 300px; margin: 3em auto; box-shadow: 0 0 10px #ccc; }
+        .display { font-size: 2em; margin-bottom: 1em; text-align: right; background: #451A1AFF; color: #fff; padding: 0.5em; border-radius: 5px; }
+        .buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5em; }
+        button { font-size: 1.2em; padding: 0.7em; border: none; border-radius: 5px; background: #eee; cursor: pointer; transition: background 0.2s; }
+        button:hover { background: #ddd; }
+        .op { background: #90D5FF; color: #fff; }
+        .ac { background: #e53935; color: #fff; grid-column: span 4; }
+    </style>
+</head>
+<body>
+<div class="calc-container">
+    <div class="display" id="display" th:text="${display}">0</div>
+    <form id="calcForm" th:action="@{/operar}" method="post" style="display:none;">
+        <input type="hidden" name="valor" id="valorInput" />
+        <input type="hidden" name="operacion" id="operacionInput" />
+    </form>
+    <div class="buttons">
+        <button type="button" onclick="addNumber('7')">7</button>
+        <button type="button" onclick="addNumber('8')">8</button>
+        <button type="button" onclick="addNumber('9')">9</button>
+        <button type="button" onclick="setOperator('/')" class="op">/</button>
+        <button type="button" onclick="addNumber('4')">4</button>
+        <button type="button" onclick="addNumber('5')">5</button>
+        <button type="button" onclick="addNumber('6')">6</button>
+        <button type="button" onclick="setOperator('*')" class="op">*</button>
+        <button type="button" onclick="addNumber('1')">1</button>
+        <button type="button" onclick="addNumber('2')">2</button>
+        <button type="button" onclick="addNumber('3')">3</button>
+        <button type="button" onclick="setOperator('-')" class="op">-</button>
+        <button type="button" onclick="addNumber('0')">0</button>
+        <button type="button" onclick="addNumber('.')" class="op">.</button>
+        <button type="button" onclick="setOperator('+')" class="op">+</button>
+        <button type="button" onclick="calculate()" class="op">=</button>
+        <button type="button" onclick="allClear()" class="ac">AC</button>
+        <form id="acForm" th:action="@{/ac}" method="post" style="display: none;"></form>
+    </div>
+</div>
+<script>
+    let display = document.getElementById('display');
+    let valorInput = document.getElementById('valorInput');
+    let operacionInput = document.getElementById('operacionInput');
+    let calcForm = document.getElementById('calcForm');
+    let current = '';
+    let operator = '';
+    let operand = '';
+
+    function addNumber(num) {
+        if (current === '0' && num !== '.') current = '';
+        if (num === '.' && current.includes('.')) return;
+        current += num;
+        display.textContent = current;
+    }
+
+    function setOperator(op) {
+        if (current === '') return;
+        operator = op;
+        operand = current;
+        current = '';
+        display.textContent = '0';
+    }
+
+    function calculate() {
+        if (operator === '' || current === '') return;
+        valorInput.value = operand + ',' + current;
+        operacionInput.value = operator;
+        calcForm.submit();
+    }
+
+    function allClear() {
+        document.getElementById('acForm').submit();
+    }
+
+</script>
+</body>
+</html> 
